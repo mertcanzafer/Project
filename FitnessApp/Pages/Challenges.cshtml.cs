@@ -3,13 +3,13 @@ using FitnessApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace MyApp.Namespace
 {
     [Authorize]
     public class ChallengesModel : PageModel
     {
-
         [BindProperty]
         public TblTodo NewToDo { get; set; } = default!;
 
@@ -18,21 +18,35 @@ namespace MyApp.Namespace
 
         public List<Favorite> FavoriteList { get; set; } = new List<Favorite>();
         public Favorite favorite { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public string CategoryFilter { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public string DifficultyLevelFilter { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public int? PeriodFilter { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string ChallengeNameSearch { get; set; } = default!;
+
         public IActionResult OnPost()
         {
             if (!ModelState.IsValid || NewToDo == null)
             {
                 return Page();
             }
+
             NewToDo.IsDeleted = false;
-            NewToDo.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // add this statement
+            NewToDo.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ToDo.Add(NewToDo);
             ToDo.SaveChanges();
             return RedirectToAction("Get");
         }
+
         public IActionResult OnPostDelete(int id)
         {
-            // var itemToUpdate = ToDoList.FirstOrDefault(item => item.Id == id);
             if (ToDo.TblTodos != null)
             {
                 var todo = ToDo.TblTodos.Find(id);
@@ -45,17 +59,38 @@ namespace MyApp.Namespace
 
             return RedirectToAction("Get");
         }
+
         public void OnGet()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // will give the logged-in user's userId
 
-            // LINQ query to retrieve items where IsDeleted is false and UserId is the logged-in user's id
-            ToDoList = (from item in ToDo.TblTodos
-                        where item.IsDeleted == false
-                        where item.UserId == userId
-                        select item).ToList();
+            var query = ToDo.TblTodos.AsQueryable();
+
+            query = query.Where(item => item.IsDeleted == false && item.UserId == userId);
+
+            if (!string.IsNullOrEmpty(CategoryFilter))
+            {
+                query = query.Where(item => item.Category == CategoryFilter);
+            }
+
+            if (!string.IsNullOrEmpty(DifficultyLevelFilter))
+            {
+                query = query.Where(item => item.DifficultyLevel == DifficultyLevelFilter);
+            }
+
+            if (PeriodFilter.HasValue)
+            {
+                query = query.Where(item => item.Period == PeriodFilter.Value);
+            }
+
+            if (!string.IsNullOrEmpty(ChallengeNameSearch))
+            {
+                query = query.Where(item => item.ChallengeName.Contains(ChallengeNameSearch));
+            }
+
+            ToDoList = query.ToList();
         }
+
         public IActionResult OnPostAddToList(int id)
         {
             var todo = ToDo.TblTodos.Find(id);

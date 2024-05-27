@@ -4,7 +4,7 @@
     ViewData["Title"] = "Challenge";
 }
 
-<h1>ChallengeList List</h1>
+<h1>Challenge List</h1>
 
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -46,10 +46,49 @@
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
 
+<form method="get">
+    <div class="form-group">
+        <label for="CategoryFilter">Category</label>
+        <select name="CategoryFilter" class="form-control">
+            <option value="">-- All Categories --</option>
+            <option value="Step">Step</option>
+            <option value="Squad">Squad</option>
+            <option value="Cardio">Cardio</option>
+            <option value="weight">Weight</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="DifficultyLevelFilter">Difficulty Level</label>
+        <select name="DifficultyLevelFilter" class="form-control">
+            <option value="">-- All Levels --</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="PeriodFilter">Period</label>
+        <input type="number" name="PeriodFilter" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Filter" class="btn btn-primary" />
+    </div>
+</form>
+
+<form method="get">
+    <div class="form-group mt-3">
+        <label for="ChallengeNameSearch">Challenge Name</label>
+        <input type="text" name="ChallengeNameSearch" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-secondary" />
+    </div>
+</form>
 
 <table class="table mt-5">
     <thead>
@@ -78,3 +117,7 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
