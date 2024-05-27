@@ -1,0 +1,34 @@
+﻿@page
+@model MyApp.Namespace.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h1>Favorite Challenge List</h1>
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th scope="col">Challenge Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Difficulty Level</th>
+            <th scope="col">Period</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fav in Model.FavoriteList)
+        {
+            <tr>
+                <td>@fav.ChallengeName</td>
+                <td>@fav.Category</td>
+                <td>@fav.DifficultyLevel</td>
+                <td>@fav.Period</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<body>
+    <p><strong>Click the link below to go to Profile:</strong></p>
+    <a asp-area="Identity" asp-page="/Account/Manage/Index">See Profile details</a>
+
+</body>
